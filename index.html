@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ZAPFIX Tools - Free IT Downloads">
+  <title>ZAPFIX Tools - Free IT Downloads</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: #fff;
+      overflow: hidden;
+    }
+
+    .loading-container {
+      text-align: center;
+      animation: fadeIn 0.5s ease-in;
+    }
+
+    .logo {
+      font-size: 4rem;
+      font-weight: 700;
+      color: #00D9FF;
+      margin-bottom: 2rem;
+      letter-spacing: 2px;
+      text-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
+      animation: pulse 2s infinite;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(0, 217, 255, 0.3);
+      border-top: 4px solid #00D9FF;
+      border-radius: 50%;
+      margin: 2rem auto;
+      animation: spin 1s linear infinite;
+    }
+
+    .loading-text {
+      font-size: 1.2rem;
+      color: #00D9FF;
+      margin-top: 2rem;
+      font-weight: 600;
+      animation: fade 1.5s infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    @keyframes fade {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; }
+    }
+
+    @media (max-width: 768px) {
+      .logo {
+        font-size: 2.5rem;
+      }
+      .loading-text {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="loading-container">
+    <div class="logo">ZAPFIX</div>
+    <div class="spinner"></div>
+    <div class="loading-text">Loading Tools...</div>
+  </div>
+
+  <script>
+    // Auto-redirect to download.html after 2 seconds
+    setTimeout(() => {
+      window.location.href = 'download.html';
+    }, 2000);
+  </script>
+</body>
+</html>

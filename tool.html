@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZAPFIX Tools - Tool Details</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+      color: #fff;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .back-btn {
+      background: #00D9FF;
+      color: #0a0e27;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    .back-btn:hover {
+      background: #00b8cc;
+      transform: translateY(-2px);
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #00D9FF;
+      letter-spacing: 1px;
+      text-shadow: 0 0 10px rgba(0, 217, 255, 0.5);
+    }
+
+    .tool-container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 217, 255, 0.3);
+      border-radius: 12px;
+      padding: 2rem;
+    }
+
+    .tool-header {
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .tool-icon {
+      width: 150px;
+      height: 150px;
+      border-radius: 12px;
+      object-fit: cover;
+      border: 2px solid #00D9FF;
+    }
+
+    .tool-info {
+      flex: 1;
+    }
+
+    .tool-name {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #00D9FF;
+      margin-bottom: 1rem;
+    }
+
+    .tool-description {
+      font-size: 1rem;
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .tool-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .like-btn, .download-btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cu...(truncated 6836 characters)...
+  </style>
+</head>
+<body>
+  <header>
+    <button class="back-btn" onclick="window.location.href = 'download.html'">← Back</button>
+    <div class="logo">ZAPFIX</div>
+  </header>
+
+  <div class="tool-container" id="toolContainer">
+    <div class="loading">Loading tool details...</div>
+  </div>
+
+  <script>
+    const BACKEND_URL = '';  // Empty for Render (same domain)
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const toolId = urlParams.get('id');
+
+    async function loadTool() {
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/tools/${toolId}`);
+        if (!response.ok) throw new Error('Failed to load tool');
+        const tool = await response.json();
+        renderTool(tool);
+      } catch (err) {
+        document.getElementById('toolContainer').innerHTML = `<p class="error">Error loading tool: ${err.message}</p>`;
+      }
+    }
+
+    function renderTool(tool) {
+      document.getElementById('toolContainer').innerHTML = `
+        <div class="tool-header">
+          <img src="${tool.icon}" alt="${tool.name}" class="tool-icon">
+          <div class="tool-info">
+            <h1 class="tool-name">${tool.name}</h1>
+            <p class="tool-description">${tool.description}</p>
+          </div>
+        </div>
+        <div class="tool-actions">
+          <button class="like-btn" onclick="likeTool('${tool._id}')">Like <span id="likeCount">${tool.likes || 0}</span></button>
+          <a href="${tool.file}" class="download-btn" download>Download Tool</a>
+        </div>
+        <div class="comments-section">
+          <h2>Comments</h2>
+          <div class="comment-form">
+            <input type="text" id="commentName" placeholder="Your name (optional)">
+            <textarea id="commentText" placeholder="Share your thoughts..."></textarea>
+          </div>
+          <button class="post-btn" onclick="postComment('${tool._id}')">Post Comment</button>
+        </div>
+
+        <div id="commentsList" class="comments-list">
+          ${renderComments(tool.comments)}
+        </div>
+      `;
+    }
+
+    function renderComments(comments) {
+      if (!comments || comments.length === 0) {
+        return '<p style="color: rgba(255, 255, 255, 0.5);">No comments yet. Be the first to comment!</p>';
+      }
+      return comments.map(comment => `
+        <div class="comment">
+          <div class="comment-author">${comment.name || 'Anonymous'}</div>
+          <div class="comment-text">${comment.text}</div>
+          <div class="comment-time">${new Date(comment.createdAt).toLocaleString()}</div>
+        </div>
+      `).join('');
+    }
+
+    async function likeTool(id) {
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/tools/${id}/like`, {
+          method: 'POST'
+        });
+        if (!response.ok) throw new Error('Failed to like');
+        const data = await response.json();
+        document.getElementById('likeCount').textContent = data.likes;
+      } catch (err) {
+        alert('Error: ' + err.message);
+      }
+    }
+
+    async function postComment(id) {
+      const name = document.getElementById('commentName').value || 'Anonymous';
+      const text = document.getElementById('commentText').value;
+
+      if (!text.trim()) {
+        alert('Please enter a comment');
+        return;
+      }
+
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/tools/${id}/comments`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, text })
+        });
+        if (!response.ok) throw new Error('Failed to post comment');
+        const comments = await response.json();
+        document.getElementById('commentsList').innerHTML = renderComments(comments);
+        document.getElementById('commentName').value = '';
+        document.getElementById('commentText').value = '';
+      } catch (err) {
+        alert('Error: ' + err.message);
+      }
+    }
+
+    loadTool();
+  </script>
+</body>
+</html>

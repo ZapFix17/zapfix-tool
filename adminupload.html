@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZAPFIX Tools - Upload Tool</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+      color: #fff;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #00D9FF;
+      letter-spacing: 1px;
+    }
+
+    .logout-btn {
+      background: #ff6464;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: 'Poppins', sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    .logout-btn:hover {
+      background: #ff4444;
+      transform: translateY(-2px);
+    }
+
+    .upload-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 217, 255, 0.3);
+      border-radius: 12px;
+      padding: 2rem;
+    }
+
+    .upload-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #00D9FF;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: #00D9FF;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="file"],
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid rgba(0, 217, 255, 0.3);
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+    }
+
+    .form-group input[type="text"]::placeholder,
+    .form-group textarea::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .form-group input[type="text"]:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #00D9FF;
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 10px rgba(0, 217, 255, 0.3);
+    }
+
+    .file-input-container {
+      position: relative;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(0, 217, 255, 0.3);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      min-height: 48px;
+      cursor: pointer;
+    }
+
+    .file-input-container:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .file-name {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.95rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+
+    .upload-btn {
+      width: 100%;
+      padding: 14px;
+      background: #00D9FF;
+      color: #0a0e27;
+      border: none;
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .upload-btn:hover {
+      background: #00b8cc;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 217, 255, 0.4);
+    }
+
+    .upload-btn:disabled {
+      background: #0084a8;
+      cursor: not-allowed;
+    }
+
+    .error-message {
+      background: rgba(255, 100, 100, 0.2);
+      border: 1px solid rgba(255, 100, 100, 0.5);
+      color: #ff6464;
+      padding: 12px;
+      border-radius: 6px;
+      margin-top: 1rem;
+      text-align: center;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    .success-message {
+      background: rgba(0, 217, 255, 0.2);
+      border: 1px solid rgba(0, 217, 255, 0.5);
+      color: #00D9FF;
+      padding: 12px;
+      border-radius: 6px;
+      margin-top: 1rem;
+      text-align: center;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    @media (max-width: 768px) {
+      .upload-container {
+        padding: 1.5rem;
+      }
+
+      .upload-title {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">ZAPFIX</div>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </header>
+
+  <div class="upload-container">
+    <h1 class="upload-title">Upload New Tool</h1>
+
+    <div id="errorMessage" class="error-message"></div>
+    <div id="successMessage" class="success-message"></div>
+
+    <form id="uploadForm" onsubmit="handleUpload(event)">
+      <div class="form-group">
+        <label for="name">Tool Name</label>
+        <input type="text" id="name" placeholder="Enter tool name" required>
+      </div>
+
+      <div class="form-group">
+        <label for="description">Description</label>
+        <textarea id="description" placeholder="Enter tool description" rows="4" required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="icon">Icon</label>
+        <div class="file-input-container" onclick="document.getElementById('icon').click()">
+          <span id="iconName" class="file-name">No file chosen</span>
+        </div>
+        <input type="file" id="icon" accept="image/*" required>
+      </div>
+
+      <div class="form-group">
+        <label for="thumbnail">Thumbnail</label>
+        <div class="file-input-container" onclick="document.getElementById('thumbnail').click()">
+          <span id="thumbnailName" class="file-name">No file chosen</span>
+        </div>
+        <input type="file" id="thumbnail" accept="image/*" required>
+      </div>
+
+      <div class="form-group">
+        <label for="file">Tool File</label>
+        <div class="file-input-container" onclick="document.getElementById('file').click()">
+          <span id="fileName" class="file-name">No file chosen</span>
+        </div>
+        <input type="file" id="file" required>
+      </div>
+
+      <button type="submit" class="upload-btn" id="uploadBtn">Upload Tool</button>
+    </form>
+  </div>
+
+  <script>
+    const BACKEND_URL = '';  // Empty for Render (same domain)
+
+    if (!localStorage.getItem('adminToken')) {
+      window.location.href = 'logindownload.html';
+    }
+
+    document.getElementById('icon').addEventListener('change', (e) => {
+      document.getElementById('iconName').textContent = e.target.files[0]?.name || 'No file chosen';
+    });
+
+    document.getElementById('thumbnail').addEventListener('change', (e) => {
+      document.getElementById('thumbnailName').textContent = e.target.files[0]?.name || 'No file chosen';
+    });
+
+    document.getElementById('file').addEventListener('change', (e) => {
+      document.getElementById('fileName').textContent = e.target.files[0]?.name || 'No file chosen';
+    });
+
+    async function handleUpload(event) {
+      event.preventDefault();
+      const uploadBtn = document.getElementById('uploadBtn');
+      const errorMessage = document.getElementById('errorMessage');
+      const successMessage = document.getElementById('successMessage');
+
+      errorMessage.style.display = 'none';
+      successMessage.style.display = 'none';
+
+      const formData = new FormData();
+      formData.append('name', document.getElementById('name').value);
+      formData.append('description', document.getElementById('description').value);
+      formData.append('icon', document.getElementById('icon').files[0]);
+      formData.append('thumbnail', document.getElementById('thumbnail').files[0]);
+      formData.append('file', document.getElementById('file').files[0]);
+
+      uploadBtn.disabled = true;
+      uploadBtn.textContent = 'Uploading...';
+
+      try {
+        const response = await fetch(`${BACKEND_URL}/api/admin/upload`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('adminToken')}`
+          },
+          body: formData
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Upload failed');
+        }
+
+        successMessage.textContent = 'Tool uploaded successfully! Redirecting...';
+        successMessage.style.display = 'block';
+        setTimeout(() => {
+          window.location.href = 'editdownload.html';
+        }, 2000);
+      } catch (err) {
+        errorMessage.textContent = err.message;
+        errorMessage.style.display = 'block';
+        uploadBtn.disabled = false;
+        uploadBtn.textContent = 'Upload Tool';
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem('adminToken');
+      window.location.href = 'logindownload.html';
+    }
+  </script>
+</body>
+</html>
